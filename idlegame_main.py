@@ -39,7 +39,7 @@ class IdleGame:
         self.PLAYER_STARTING_MONEY = 50
         self.player_money = self.PLAYER_STARTING_MONEY
         self.player_level = 1
-        self.level_up_cost = 50
+        self.level_up_cost = 50000
 
         self.constant_money_increase = 0.25  # This is the amount of money that is added to the player's money every tick no matter what
 
