@@ -1,45 +1,21 @@
 import pygame
 import pygame_gui
+from game_data import *
 
 
 class IdleGame:
     def __init__(self) -> None:
-        # Define button size and position variables
-        WINDOW_WIDTH = 800
-        WINDOW_HEIGHT = 600
-
-        OUTER_BORDER_WIDTH = 10
-        BUTTON_PADDING = 19
-
-        BUTTON_WIDTH = WINDOW_WIDTH // 7
-        BUTTON_HEIGHT = WINDOW_HEIGHT // 12
-
-        BUTTON_ROW_1_Y_POS = WINDOW_HEIGHT - BUTTON_HEIGHT - OUTER_BORDER_WIDTH
-        BUTTON_ROW_2_Y_POS = BUTTON_ROW_1_Y_POS - BUTTON_HEIGHT - BUTTON_PADDING
-
-        PLAYER_MONEY_LABEL_WIDTH = 200
-        PLAYER_MONEY_LABEL_HEIGHT = 75
-
-        PLAYER_MONEY_LABEL_X_POS = (
-            (WINDOW_WIDTH // 2)
-            - (PLAYER_MONEY_LABEL_WIDTH // 2)
-            - (OUTER_BORDER_WIDTH // 2)
-        )
-        PLAYER_MONEY_LABEL_Y_POS = OUTER_BORDER_WIDTH
-
-        FUNCTION_BUTTON_WIDTH = 200
-        FUNCTION_BUTTON_HEIGHT = 75
-
-        # WINDOW_WIDTH // 2 - (PLAYER_MONEY_LABEL_WIDTH // 2), OUTER_BORDER_WIDTH
 
         # Define Main Stored Game Variables; these are the variables that are saved to the game save file
-        self.PLAYER_STARTING_MONEY = 50
+        self.PLAYER_STARTING_MONEY = 40
         self.player_money = self.PLAYER_STARTING_MONEY
         self.player_level = 1
-        self.level_up_cost = 5000  # Change this to increase the cost of leveling up
+        self.level_up_cost = 25000  # Change this to increase the cost of leveling up
 
-        # Set up default and starting values for player money
-        self.constant_money_increase = 0.1  # This is the default amount of money that is added to the player's money every tick no matter what
+        # Set up default and starting values for player money increase per tick
+        self.constant_money_increase = (
+            0.1  # This is the default amount of money that is added with no purchases
+        )
         self.total_money_per_tick = (
             self.constant_money_increase
         )  # This is the total amount of money that is added to the player's money every tick
@@ -48,19 +24,158 @@ class IdleGame:
         self.auto_buy = False
         self.AUTO_BUY_PRICE = 2500
 
-        # Prices to purchase one of each item
-        self.ITEM_1_PRICE, self.ITEM_1_VALUE, self.ITEM_1_QUANTITY = 20, 0.01, 0
-        self.ITEM_2_PRICE, self.ITEM_2_VALUE, self.ITEM_2_QUANTITY = 50, 0.10, 0
-        self.ITEM_3_PRICE, self.ITEM_3_VALUE, self.ITEM_3_QUANTITY = 100, 0.30, 0
-        self.ITEM_4_PRICE, self.ITEM_4_VALUE, self.ITEM_4_QUANTITY = 200, 0.75, 0
-        self.ITEM_5_PRICE, self.ITEM_5_VALUE, self.ITEM_5_QUANTITY = 400, 0.20, 0
-        self.ITEM_6_PRICE, self.ITEM_6_VALUE, self.ITEM_6_QUANTITY = 800, 0.50, 0
-        self.ITEM_7_PRICE, self.ITEM_7_VALUE, self.ITEM_7_QUANTITY = 1600, 1.20, 0
-        self.ITEM_8_PRICE, self.ITEM_8_VALUE, self.ITEM_8_QUANTITY = 3200, 2.50, 0
-        self.ITEM_9_PRICE, self.ITEM_9_VALUE, self.ITEM_9_QUANTITY = 6400, 6.00, 0
-        self.ITEM_10_PRICE, self.ITEM_10_VALUE, self.ITEM_10_QUANTITY = 12800, 15.00, 0
-        self.ITEM_11_PRICE, self.ITEM_11_VALUE, self.ITEM_11_QUANTITY = 25600, 35.00, 0
-        self.ITEM_12_PRICE, self.ITEM_12_VALUE, self.ITEM_12_QUANTITY = 51200, 75.00, 0
+        # Names, prices, values (per tick (self.fps)), and quantities of items the player has
+        self.ITEM_1 = (
+            self.ITEM_NAME,
+            self.ITEM_1_PRICE,
+            self.ITEM_1_VALUE,
+            self.ITEM_1_QUANTITY,
+        ) = (
+            "ITEM_1",
+            20,
+            0.01,
+            0,
+        )
+        self.ITEM_2 = (
+            self.ITEM_NAME,
+            self.ITEM_2_PRICE,
+            self.ITEM_2_VALUE,
+            self.ITEM_2_QUANTITY,
+        ) = (
+            "ITEM_2",
+            50,
+            0.05,
+            0,
+        )
+        self.ITEM_3 = (
+            self.ITEM_NAME,
+            self.ITEM_3_PRICE,
+            self.ITEM_3_VALUE,
+            self.ITEM_3_QUANTITY,
+        ) = (
+            "ITEM_3",
+            100,
+            0.15,
+            0,
+        )
+        self.ITEM_4 = (
+            self.ITEM_NAME,
+            self.ITEM_4_PRICE,
+            self.ITEM_4_VALUE,
+            self.ITEM_4_QUANTITY,
+        ) = (
+            "ITEM_4",
+            200,
+            0.40,
+            0,
+        )
+        self.ITEM_5 = (
+            self.ITEM_NAME,
+            self.ITEM_5_PRICE,
+            self.ITEM_5_VALUE,
+            self.ITEM_5_QUANTITY,
+        ) = (
+            "ITEM_5",
+            400,
+            1.0,
+            0,
+        )
+        self.ITEM_6 = (
+            self.ITEM_NAME,
+            self.ITEM_6_PRICE,
+            self.ITEM_6_VALUE,
+            self.ITEM_6_QUANTITY,
+        ) = (
+            "ITEM_6",
+            800,
+            2.50,
+            0,
+        )
+        self.ITEM_7 = (
+            self.ITEM_NAME,
+            self.ITEM_7_PRICE,
+            self.ITEM_7_VALUE,
+            self.ITEM_7_QUANTITY,
+        ) = (
+            "ITEM_7",
+            1600,
+            6.20,
+            0,
+        )
+        self.ITEM_8 = (
+            self.ITEM_NAME,
+            self.ITEM_8_PRICE,
+            self.ITEM_8_VALUE,
+            self.ITEM_8_QUANTITY,
+        ) = (
+            "ITEM_8",
+            3200,
+            2.50,
+            0,
+        )
+        self.ITEM_9 = (
+            self.ITEM_NAME,
+            self.ITEM_9_PRICE,
+            self.ITEM_9_VALUE,
+            self.ITEM_9_QUANTITY,
+        ) = (
+            "ITEM_9",
+            6400,
+            6.00,
+            0,
+        )
+        self.ITEM_10 = (
+            self.ITEM_NAME,
+            self.ITEM_10_PRICE,
+            self.ITEM_10_VALUE,
+            self.ITEM_10_QUANTITY,
+        ) = (
+            "ITEM_10",
+            12800,
+            15.00,
+            0,
+        )
+        self.ITEM_11 = (
+            self.ITEM_NAME,
+            self.ITEM_11_PRICE,
+            self.ITEM_11_VALUE,
+            self.ITEM_11_QUANTITY,
+        ) = (
+            "ITEM_11",
+            25600,
+            35.00,
+            0,
+        )
+        self.ITEM_12 = (
+            self.ITEM_NAME,
+            self.ITEM_12_PRICE,
+            self.ITEM_12_VALUE,
+            self.ITEM_12_QUANTITY,
+        ) = (
+            "ITEM_12",
+            51200,
+            75.00,
+            0,
+        )
+
+        self.items = [
+            self.ITEM_1,
+            self.ITEM_2,
+            self.ITEM_3,
+            self.ITEM_4,
+            self.ITEM_5,
+            self.ITEM_6,
+            self.ITEM_7,
+            self.ITEM_8,
+            self.ITEM_9,
+            self.ITEM_10,
+            self.ITEM_11,
+            self.ITEM_12,
+        ]
+
+        # self.items_dict = dict()
+        # for index, item in enumerate(self.items):
+        #     self.items_dict[f"{item[0]}"] = item
 
         self.AUTO_BUY_FUNCS = [
             (self.buy_item_1_button_pressed, self.ITEM_1_VALUE),
@@ -155,19 +270,23 @@ class IdleGame:
         self.buy_item_1_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (OUTER_BORDER_WIDTH, BUTTON_ROW_1_Y_POS),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_1_PRICE)}: +{self.ITEM_1_VALUE}",
             manager=self.manager,
         )
 
+        # self.buy_item_1_button = self.CreateItemButton(
+        #     self.manager,
+        # )
+
         self.buy_item_2_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + BUTTON_PADDING + BUTTON_WIDTH,
+                    OUTER_BORDER_WIDTH + BUTTON_PADDING + ITEM_BUTTON_WIDTH,
                     BUTTON_ROW_1_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_2_PRICE)}: +{self.ITEM_2_VALUE}",
             manager=self.manager,
@@ -176,10 +295,10 @@ class IdleGame:
         self.buy_item_3_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 2) + (BUTTON_WIDTH * 2),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 2) + (ITEM_BUTTON_WIDTH * 2),
                     BUTTON_ROW_1_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_3_PRICE)}: +{self.ITEM_3_VALUE}",
             manager=self.manager,
@@ -188,10 +307,10 @@ class IdleGame:
         self.buy_item_4_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 3) + (BUTTON_WIDTH * 3),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 3) + (ITEM_BUTTON_WIDTH * 3),
                     BUTTON_ROW_1_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_4_PRICE)}: +{self.ITEM_4_VALUE}",
             manager=self.manager,
@@ -200,10 +319,10 @@ class IdleGame:
         self.buy_item_5_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 4) + (BUTTON_WIDTH * 4),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 4) + (ITEM_BUTTON_WIDTH * 4),
                     BUTTON_ROW_1_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_5_PRICE)}: +{self.ITEM_5_VALUE}",
             manager=self.manager,
@@ -212,10 +331,10 @@ class IdleGame:
         self.buy_item_6_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 5) + (BUTTON_WIDTH * 5),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 5) + (ITEM_BUTTON_WIDTH * 5),
                     BUTTON_ROW_1_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_6_PRICE)}: +{self.ITEM_6_VALUE}",
             manager=self.manager,
@@ -224,7 +343,7 @@ class IdleGame:
         self.buy_item_7_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (OUTER_BORDER_WIDTH, BUTTON_ROW_2_Y_POS),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_7_PRICE)}: +{self.ITEM_7_VALUE}",
             manager=self.manager,
@@ -234,10 +353,10 @@ class IdleGame:
         self.buy_item_8_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + BUTTON_PADDING + BUTTON_WIDTH,
+                    OUTER_BORDER_WIDTH + BUTTON_PADDING + ITEM_BUTTON_WIDTH,
                     BUTTON_ROW_2_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_8_PRICE)}: +{self.ITEM_8_VALUE}",
             manager=self.manager,
@@ -247,10 +366,10 @@ class IdleGame:
         self.buy_item_9_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 2) + (BUTTON_WIDTH * 2),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 2) + (ITEM_BUTTON_WIDTH * 2),
                     BUTTON_ROW_2_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_9_PRICE)}: +{self.ITEM_9_VALUE}",
             manager=self.manager,
@@ -260,10 +379,10 @@ class IdleGame:
         self.buy_item_10_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 3) + (BUTTON_WIDTH * 3),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 3) + (ITEM_BUTTON_WIDTH * 3),
                     BUTTON_ROW_2_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_10_PRICE)}: +{self.ITEM_10_VALUE}",
             manager=self.manager,
@@ -273,10 +392,10 @@ class IdleGame:
         self.buy_item_11_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 4) + (BUTTON_WIDTH * 4),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 4) + (ITEM_BUTTON_WIDTH * 4),
                     BUTTON_ROW_2_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_11_PRICE)}: +{self.ITEM_11_VALUE}",
             manager=self.manager,
@@ -286,10 +405,10 @@ class IdleGame:
         self.buy_item_12_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 (
-                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 5) + (BUTTON_WIDTH * 5),
+                    OUTER_BORDER_WIDTH + (BUTTON_PADDING * 5) + (ITEM_BUTTON_WIDTH * 5),
                     BUTTON_ROW_2_Y_POS,
                 ),
-                (BUTTON_WIDTH, BUTTON_HEIGHT),
+                (ITEM_BUTTON_WIDTH, ITEM_BUTTON_HEIGHT),
             ),
             text=f"${self.shorten_number(self.ITEM_12_PRICE)}: +{self.ITEM_12_VALUE}",
             manager=self.manager,
@@ -297,6 +416,40 @@ class IdleGame:
         )
 
         self.main()
+
+    class CreateItemButton:
+        def __init__(
+            self,
+            manager,
+            item_name,
+            item_price,
+            item_value,
+            x_pos,
+            y_pos,
+            width,
+            height,
+        ):
+            super().__init__()
+            self.item_name = item_name
+            self.item_price = item_price
+            self.item_value = item_value
+            self.item_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    (x_pos, y_pos),
+                    (width, height),
+                ),
+                text=f"{self.item_name}: -${self.item_price}",
+                manager=manager,
+                tool_tip_text=f"This button will buy {self.item_name} for {self.item_price}",
+            )
+
+    class Menu:
+        def __init__(self, screen):
+            self.screen = screen
+            self.screen_rect = screen.get_rect()
+            self.menu_items = []
+            self.font = pygame.font.SysFont(None, 48)
+            self.prep_menu()
 
     # Shorten input to 2 decimal places
     def truncate(self, input, decimals=2):
@@ -546,14 +699,6 @@ class IdleGame:
             self.player_level_up_button_pressed()
         if event.ui_element == self.auto_buy_button:
             self.auto_buy_button_pressed()
-
-    class Menu:
-        def __init__(self, screen):
-            self.screen = screen
-            self.screen_rect = screen.get_rect()
-            self.menu_items = []
-            self.font = pygame.font.SysFont(None, 48)
-            self.prep_menu()
 
     def main(self):
 
